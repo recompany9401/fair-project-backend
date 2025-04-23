@@ -9,6 +9,7 @@ const loginRoutes = require("./routes/loginRoutes");
 const productRoutes = require("./routes/productRoutes");
 const purchaseRoutes = require("./routes/purchaseRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ mongoose
   .catch((err) => console.error("MongoDB Atlas 연결 실패:", err));
 
 // 라우트
+app.use("/api/auth", authRoutes);
 app.use("/api/businesses", businessRoutes);
 app.use("/api/buyers", buyerRoutes);
 app.use("/api/login", loginRoutes);
