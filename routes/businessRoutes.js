@@ -17,7 +17,7 @@ function authBusiness(req, res, next) {
     }
 
     const token = authHeader.split(" ")[1]; // "Bearer" 다음 토큰 부분
-    const secretKey = process.env.JWT_SECRET || "mytestsecret"; // 실제 프로젝트에서는 .env에 긴 문자열로 보관
+    const secretKey = process.env.JWT_SECRET;
 
     // 토큰 검증
     const decoded = jwt.verify(token, secretKey);

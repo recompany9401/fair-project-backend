@@ -58,7 +58,7 @@ exports.login = async (req, res) => {
     // 7) JWT 발급 (payload에 user._id, role)
     const token = jwt.sign(
       { userId: user._id.toString(), role },
-      process.env.JWT_SECRET || "mytestsecret",
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
