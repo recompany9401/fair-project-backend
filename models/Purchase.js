@@ -1,4 +1,3 @@
-// models/Purchase.js
 const mongoose = require("mongoose");
 
 const PurchaseSchema = new mongoose.Schema({
@@ -12,10 +11,7 @@ const PurchaseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Business",
   },
-
-  // ★ 동호수 필드 추가
   dongHo: { type: String, default: "" },
-
   itemCategory: { type: String, required: true },
   businessName: { type: String, required: true },
   productName: { type: String, required: true },

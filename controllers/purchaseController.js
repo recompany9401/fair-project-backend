@@ -1,11 +1,8 @@
-// controllers/purchaseController.js
 const mongoose = require("mongoose");
 const Purchase = require("../models/Purchase");
 const Buyer = require("../models/Buyer");
 
-/**
- * 1) 구매 정보 등록 (POST /api/purchases)
- */
+// 구매 정보 등록
 exports.createPurchase = async (req, res) => {
   try {
     const {
@@ -24,7 +21,6 @@ exports.createPurchase = async (req, res) => {
       note,
     } = req.body;
 
-    // 필수 필드 체크
     if (
       !buyerId ||
       !itemCategory ||
@@ -38,28 +34,24 @@ exports.createPurchase = async (req, res) => {
 
     // Buyer DB에서 구매자명, 동/호수 가져오기
     let dongHoValue = "";
-    let buyerNameValue = ""; // ★ 추가
+    let buyerNameValue = "";
     const buyer = await Buyer.findById(buyerId);
     if (buyer) {
-      // Buyer 스키마에서 'name', 'dong', 'ho' 필드가 존재한다고 가정
-      buyerNameValue = buyer.name || ""; // ★ 계약자명
+      buyerNameValue = buyer.name || "";
       dongHoValue = `${buyer.dong}동 ${buyer.ho}호`;
     }
 
-    // 날짜 변환
     const cDate = contractDate ? new Date(contractDate) : null;
     const iDate = installationDate ? new Date(installationDate) : null;
 
-    // businessId -> ObjectId 변환
     let bizObjId = null;
     if (businessId) {
       bizObjId = new mongoose.Types.ObjectId(businessId);
     }
 
-    // 새 Purchase 문서
     const newPurchase = new Purchase({
       buyerId: new mongoose.Types.ObjectId(buyerId),
-      buyerName: buyerNameValue, // ★ 여기서 buyerName 세팅
+      buyerName: buyerNameValue,
       businessId: bizObjId,
       dongHo: dongHoValue,
 
@@ -90,10 +82,7 @@ exports.createPurchase = async (req, res) => {
   }
 };
 
-/**
- * 2) 구매 리스트 조회 (GET /api/purchases?buyerId=...)
- *    특정 구매자의 전체 구매 목록
- */
+// 특정 구매자의 전체 구매 목록 조회
 exports.getPurchases = async (req, res) => {
   try {
     const { buyerId } = req.query;
@@ -112,9 +101,7 @@ exports.getPurchases = async (req, res) => {
   }
 };
 
-/**
- * 3) 구매 상세 조회 (GET /api/purchases/:purchaseId)
- */
+// 구매 상세 조회
 exports.getPurchaseById = async (req, res) => {
   try {
     const { purchaseId } = req.params;
@@ -129,15 +116,12 @@ exports.getPurchaseById = async (req, res) => {
   }
 };
 
-/**
- * 4) 구매내역 수정 (PUT /api/purchases/:purchaseId)
- */
+// 구매 정보 수정
 exports.updatePurchase = async (req, res) => {
   try {
     const { purchaseId } = req.params;
     const updateData = req.body;
 
-    // finalPrice 재계산
     if (updateData.price != null && updateData.discountOrSurcharge != null) {
       updateData.finalPrice =
         Number(updateData.price) - Number(updateData.discountOrSurcharge);
@@ -156,10 +140,7 @@ exports.updatePurchase = async (req, res) => {
   }
 };
 
-/**
- * 5) 옵션별 구매 내역 조회 (GET /api/purchases/by-option)
- *    ?businessId=xxx&itemCategory=xxx&productName=xxx&option=xxx
- */
+// 특정 옵션으로 구매 내역 조회
 exports.getPurchasesByOption = async (req, res) => {
   try {
     const { businessId, itemCategory, productName, option } = req.query;
@@ -184,10 +165,7 @@ exports.getPurchasesByOption = async (req, res) => {
   }
 };
 
-/**
- * 6) 구매 상태 업데이트 (PATCH /api/purchases/:purchaseId/status)
- *    body: { status: "CONFIRMED" or "CANCELED" }
- */
+// 구매 상태 업데이트
 exports.updatePurchaseStatus = async (req, res) => {
   try {
     const { purchaseId } = req.params;

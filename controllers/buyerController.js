@@ -1,6 +1,7 @@
 const Buyer = require("../models/Buyer");
 const bcrypt = require("bcrypt");
 
+// 입주자 회원가입
 exports.register = async (req, res) => {
   try {
     const {
@@ -16,16 +17,13 @@ exports.register = async (req, res) => {
       personalInfoAgreement,
     } = req.body;
 
-    // 중복 체크
     const existing = await Buyer.findOne({ userId });
     if (existing) {
       return res.status(400).json({ message: "이미 존재하는 아이디입니다." });
     }
 
-    // 비밀번호 해싱
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 새로운 Buyer 생성
     const newBuyer = new Buyer({
       userId,
       password: hashedPassword,
@@ -37,8 +35,6 @@ exports.register = async (req, res) => {
       gender,
       householdCount,
       personalInfoAgreement,
-      // role: "BUYER",
-      // approved: false,
     });
 
     await newBuyer.save();

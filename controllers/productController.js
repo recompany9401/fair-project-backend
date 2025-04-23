@@ -1,10 +1,6 @@
-// controllers/productController.js
 const Product = require("../models/Product");
 
-/**
- * 1) GET /api/products/all
- *    - 필터 없이 모든 상품 목록 반환
- */
+// 전체 상품 목록 조회
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({}).sort({ createdAt: -1 });
@@ -15,12 +11,7 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-/**
- * 2) GET /api/products
- *    - businessId가 필수
- *    - optional: search (productName 부분 검색)
- *    예) /api/products?businessId=12345&search=냉장고
- */
+// 특정 사업자 상품 목록 조회 (검색 포함)
 exports.getProducts = async (req, res) => {
   try {
     const { businessId, search } = req.query;
@@ -31,7 +22,6 @@ exports.getProducts = async (req, res) => {
     const filter = { businessId };
 
     if (search) {
-      // productName OR option OR itemCategory
       filter.$or = [
         { productName: { $regex: search, $options: "i" } },
         { option: { $regex: search, $options: "i" } },
@@ -47,13 +37,7 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-/**
- * 3) POST /api/products
- *    - 사업자가 품목/업체명/상품명/옵션/판매금액을 등록
- *    body 예: {
- *      businessId, itemCategory, businessName, productName, option, price
- *    }
- */
+// 사업자 품목 등록
 exports.createProduct = async (req, res) => {
   try {
     const {
@@ -65,7 +49,6 @@ exports.createProduct = async (req, res) => {
       price,
     } = req.body;
 
-    // 필수 필드 체크
     if (
       !businessId ||
       !itemCategory ||
@@ -76,14 +59,13 @@ exports.createProduct = async (req, res) => {
       return res.status(400).json({ message: "필수 필드가 누락됨" });
     }
 
-    // 새 상품 생성
     const newProduct = new Product({
       businessId,
       itemCategory,
       businessName,
       productName,
       option,
-      price: Number(price) || 0, // 판매금액
+      price: Number(price) || 0,
     });
 
     await newProduct.save();

@@ -1,10 +1,6 @@
-// routes/adminRoutes.js
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
-
-// 관리자 전용 미들웨어(권한체크) 생략 가능
-// router.use(checkAdminMiddleware);
 
 router.get("/businesses", adminController.getAllBusinesses);
 router.get("/buyers", adminController.getAllBuyers);

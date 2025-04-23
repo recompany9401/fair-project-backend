@@ -1,6 +1,7 @@
 const Business = require("../models/Business");
 const bcrypt = require("bcrypt");
 
+// 사업자 회원가입
 exports.register = async (req, res) => {
   try {
     const {
@@ -16,16 +17,13 @@ exports.register = async (req, res) => {
       phoneNumber,
     } = req.body;
 
-    // 중복 체크
     const existing = await Business.findOne({ userId });
     if (existing) {
       return res.status(400).json({ message: "이미 존재하는 아이디입니다." });
     }
 
-    // 비밀번호 해싱
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 새 사업자 생성
     const newBusiness = new Business({
       userId,
       password: hashedPassword,
@@ -37,8 +35,6 @@ exports.register = async (req, res) => {
       businessCategory,
       managerName,
       phoneNumber,
-      // role: "BUSINESS" (기본값이라 생략 가능)
-      // approved: false (기본값이라 생략 가능)
     });
 
     await newBusiness.save();
@@ -49,11 +45,10 @@ exports.register = async (req, res) => {
   }
 };
 
-// ─── 내 정보 조회 ───────────────────────────────────
+// 사업자 내 정보 조회
 exports.getMe = async (req, res) => {
   try {
-    // authBusiness에서 req.user = decoded (userId, role 등)
-    const businessId = req.user.userId; // JWT payload에 들어있다고 가정
+    const businessId = req.user.userId;
     const business = await Business.findById(businessId);
 
     if (!business) {
@@ -62,17 +57,15 @@ exports.getMe = async (req, res) => {
         .json({ message: "사업자 계정이 존재하지 않습니다." });
     }
 
-    // 필요한 필드만 응답
     res.json({
       _id: business._id,
       userId: business.userId,
-      name: business.name, // 상호명
-      managerName: business.managerName, // 담당자명
+      name: business.name,
+      managerName: business.managerName,
       businessNumber: business.businessNumber,
       address: business.address,
       phoneNumber: business.phoneNumber,
       approved: business.approved,
-      // ...원하는 필드 추가
     });
   } catch (error) {
     console.error(error);
