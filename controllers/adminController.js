@@ -2,17 +2,20 @@ const Buyer = require("../models/Buyer");
 const Business = require("../models/Business");
 const Purchase = require("../models/Purchase");
 
-// 사업자 전체 조회
+// 사업자 전체 조회, 검색
 exports.getAllBusinesses = async (req, res) => {
   try {
-    const { approved } = req.query;
-
+    const { approved, search } = req.query;
     const filter = {};
 
-    if (approved === "true") {
-      filter.approved = true;
-    } else if (approved === "false") {
-      filter.approved = false;
+    if (approved === "true") filter.approved = true;
+    else if (approved === "false") filter.approved = false;
+
+    if (search) {
+      filter.$or = [
+        { userId: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+      ];
     }
 
     const businesses = await Business.find(filter).sort({ createdAt: -1 });
@@ -23,16 +26,20 @@ exports.getAllBusinesses = async (req, res) => {
   }
 };
 
-// 입주자 전체 조회
+// 입주자 전체 조회, 검색
 exports.getAllBuyers = async (req, res) => {
   try {
-    const { approved } = req.query;
+    const { approved, search } = req.query;
     const filter = {};
 
-    if (approved === "true") {
-      filter.approved = true;
-    } else if (approved === "false") {
-      filter.approved = false;
+    if (approved === "true") filter.approved = true;
+    else if (approved === "false") filter.approved = false;
+
+    if (search) {
+      filter.$or = [
+        { userId: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+      ];
     }
 
     const buyers = await Buyer.find(filter).sort({ createdAt: -1 });
