@@ -143,7 +143,7 @@ exports.updatePurchase = async (req, res) => {
 // 특정 옵션으로 구매 내역 조회
 exports.getPurchasesByOption = async (req, res) => {
   try {
-    const { businessId, itemCategory, productName, option } = req.query;
+    const { businessId, itemCategory, productName, option, search } = req.query;
 
     let bizObjId = null;
     if (businessId) {
@@ -157,10 +157,13 @@ exports.getPurchasesByOption = async (req, res) => {
       option,
     };
 
+    if (search) {
+      filter.buyerName = { $regex: search, $options: "i" };
+    }
+    console.log("Final filter in getPurchasesByOption:", filter);
     const purchases = await Purchase.find(filter).sort({ createdAt: -1 });
     return res.json(purchases);
   } catch (err) {
-    console.error("getPurchasesByOption 오류:", err);
     return res.status(500).json({ message: "서버 오류" });
   }
 };
