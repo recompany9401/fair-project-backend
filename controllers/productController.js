@@ -86,13 +86,14 @@ exports.updateProduct = async (req, res) => {
 
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ message: "상품을 찾을 수 없음" });
+      return res.status(404).json({ message: "상품(옵션)을 찾을 수 없음" });
     }
 
-    product.itemCategory = itemCategory;
-    product.productName = productName;
-    product.option = option;
-    product.price = price;
+    if (itemCategory !== undefined) product.itemCategory = itemCategory;
+    if (productName !== undefined) product.productName = productName;
+    if (option !== undefined) product.option = option;
+    if (price !== undefined) product.price = Number(price);
+
     await product.save();
 
     return res.json({ message: "수정 완료", product });
@@ -106,14 +107,23 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ message: "상품을 찾을 수 없음" });
+      return res.status(404).json({ message: "상품(옵션)을 찾을 수 없음" });
+    }
+
+    const purchaseExists = await Purchase.findOne({
+      itemCategory: product.itemCategory,
+      productName: product.productName,
+      option: product.option,
+    });
+    if (purchaseExists) {
+      return res
+        .status(400)
+        .json({ message: "구매 데이터가 존재하여 삭제할 수 없습니다." });
     }
 
     await Product.findByIdAndDelete(id);
-
     return res.json({ message: "삭제 완료" });
   } catch (err) {
     console.error("deleteProduct 오류:", err);
