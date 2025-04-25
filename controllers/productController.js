@@ -103,31 +103,3 @@ exports.updateProduct = async (req, res) => {
     return res.status(500).json({ message: "서버 오류" });
   }
 };
-
-// 상품 삭제
-exports.deleteProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: "상품을 찾을 수 없음" });
-    }
-
-    const purchaseExists = await Purchase.findOne({
-      itemCategory: product.itemCategory,
-      productName: product.productName,
-      option: product.option,
-    });
-    if (purchaseExists) {
-      return res
-        .status(400)
-        .json({ message: "구매 데이터가 존재하여 삭제할 수 없습니다." });
-    }
-
-    await Product.findByIdAndDelete(id);
-    return res.json({ message: "삭제 완료" });
-  } catch (err) {
-    console.error("오류:", err);
-    return res.status(500).json({ message: "서버 오류" });
-  }
-};
