@@ -8,5 +8,6 @@ router.get("/by-option", purchaseController.getPurchasesByOption);
 router.get("/:purchaseId", purchaseController.getPurchaseById);
 router.put("/:purchaseId", purchaseController.updatePurchase);
 router.patch("/:purchaseId/status", purchaseController.updatePurchaseStatus);
+router.delete("/:purchaseId", purchaseController.deletePurchase);
 
 module.exports = router;

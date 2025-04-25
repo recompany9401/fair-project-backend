@@ -140,6 +140,24 @@ exports.updatePurchase = async (req, res) => {
   }
 };
 
+// 구매내역 삭제
+exports.deletePurchase = async (req, res) => {
+  try {
+    const { purchaseId } = req.params;
+    const deleted = await Purchase.findByIdAndDelete(purchaseId);
+
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ message: "해당 구매내역이 존재하지 않습니다." });
+    }
+    return res.json({ message: "삭제 완료" });
+  } catch (error) {
+    console.error("구매내역 삭제 오류:", error);
+    return res.status(500).json({ message: "서버 오류" });
+  }
+};
+
 // 특정 옵션으로 구매 내역 조회
 exports.getPurchasesByOption = async (req, res) => {
   try {
