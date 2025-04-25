@@ -77,3 +77,46 @@ exports.createProduct = async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 };
+
+// 품목 수정
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { itemCategory, productName, option, price } = req.body;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "상품을 찾을 수 없음" });
+    }
+
+    product.itemCategory = itemCategory;
+    product.productName = productName;
+    product.option = option;
+    product.price = price;
+    await product.save();
+
+    return res.json({ message: "수정 완료", product });
+  } catch (err) {
+    console.error("updateProduct 오류:", err);
+    return res.status(500).json({ message: "서버 오류" });
+  }
+};
+
+// 품목 삭제
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "상품을 찾을 수 없음" });
+    }
+
+    await Product.findByIdAndDelete(id);
+
+    return res.json({ message: "삭제 완료" });
+  } catch (err) {
+    console.error("deleteProduct 오류:", err);
+    return res.status(500).json({ message: "서버 오류" });
+  }
+};
