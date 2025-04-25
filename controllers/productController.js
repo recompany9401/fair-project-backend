@@ -108,19 +108,16 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ message: "상품(옵션)을 찾을 수 없음" });
+      return res.status(404).json({ message: "상품을 찾을 수 없음" });
     }
 
-    const { itemCategory, productName, option } = product;
     const purchaseExists = await Purchase.findOne({
-      itemCategory,
-      productName,
-      option,
+      itemCategory: product.itemCategory,
+      productName: product.productName,
+      option: product.option,
     });
-
     if (purchaseExists) {
       return res
         .status(400)
@@ -128,7 +125,6 @@ exports.deleteProduct = async (req, res) => {
     }
 
     await Product.findByIdAndDelete(id);
-
     return res.json({ message: "삭제 완료" });
   } catch (err) {
     console.error("deleteProduct 오류:", err);
