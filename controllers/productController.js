@@ -87,15 +87,33 @@ exports.updateProduct = async (req, res) => {
 
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ message: "상품(옵션)을 찾을 수 없음" });
+      return res.status(404).json({ message: "상품을 찾을 수 없음" });
     }
 
-    if (itemCategory !== undefined) product.itemCategory = itemCategory;
-    if (productName !== undefined) product.productName = productName;
-    if (option !== undefined) product.option = option;
-    if (price !== undefined) product.price = Number(price);
+    const oldCategory = product.itemCategory;
+    const oldPName = product.productName;
+    const oldOpt = product.option;
 
+    product.itemCategory = itemCategory || product.itemCategory;
+    product.productName = productName || product.productName;
+    product.option = option || product.option;
+    if (price !== undefined) {
+      product.price = Number(price);
+    }
     await product.save();
+
+    await Purchase.updateMany(
+      {
+        itemCategory: oldCategory,
+        productName: oldPName,
+        option: oldOpt,
+      },
+      {
+        itemCategory: product.itemCategory,
+        productName: product.productName,
+        option: product.option,
+      }
+    );
 
     return res.json({ message: "수정 완료", product });
   } catch (err) {
