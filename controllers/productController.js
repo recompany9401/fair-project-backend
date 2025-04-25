@@ -127,7 +127,7 @@ exports.deleteProduct = async (req, res) => {
     await Product.findByIdAndDelete(id);
     return res.json({ message: "삭제 완료" });
   } catch (err) {
-    console.error("deleteProduct 오류:", err);
+    console.error("오류:", err);
     return res.status(500).json({ message: "서버 오류" });
   }
 };
