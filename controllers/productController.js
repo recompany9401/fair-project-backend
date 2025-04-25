@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const Purchase = require("../models/Purchase");
 
 // 전체 상품 목록 조회
 exports.getAllProducts = async (req, res) => {
@@ -118,9 +119,9 @@ exports.deleteProduct = async (req, res) => {
       option: product.option,
     });
     if (purchaseExists) {
-      return res
-        .status(400)
-        .json({ message: "구매 데이터가 존재하여 삭제할 수 없습니다." });
+      return res.status(400).json({
+        message: "구매 데이터가 존재하여 삭제할 수 없습니다.",
+      });
     }
 
     await Product.findByIdAndDelete(id);
