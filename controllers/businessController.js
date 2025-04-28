@@ -40,7 +40,19 @@ exports.register = async (req, res) => {
     await newBusiness.save();
     return res.status(201).json({ message: "사업자 회원가입 성공" });
   } catch (error) {
-    console.error(error);
+    if (error.code === 11000) {
+      if (error.keyPattern && error.keyPattern.businessNumber === 1) {
+        return res
+          .status(400)
+          .json({ message: "이미 등록된 사업자번호입니다." });
+      } else if (error.keyPattern && error.keyPattern.userId === 1) {
+        return res.status(400).json({ message: "이미 존재하는 아이디입니다." });
+      } else {
+        return res.status(400).json({ message: "중복된 데이터가 존재합니다." });
+      }
+    }
+
+    console.error("사업자 회원가입 오류:", error);
     return res.status(500).json({ message: "서버 오류" });
   }
 };
