@@ -63,19 +63,43 @@ exports.getMyInfo = async (req, res) => {
 //내정보 수정
 exports.updateMyInfo = async (req, res) => {
   try {
-    const myId = req.user.id;
-    const { name, phoneNumber, dong, ho } = req.body;
+    const myId = req.user.id; // 인증 미들웨어로부터
 
+    // body로 들어온 필드
+    const {
+      name,
+      phoneNumber,
+      dong,
+      ho,
+      birthDate,
+      gender,
+      householdCount,
+      password, // 새 비밀번호
+    } = req.body;
+
+    // 업데이트 객체
     const updateData = {};
     if (name) updateData.name = name;
     if (phoneNumber) updateData.phoneNumber = phoneNumber;
     if (dong) updateData.dong = dong;
     if (ho) updateData.ho = ho;
+    if (birthDate) updateData.birthDate = birthDate;
+    if (gender) updateData.gender = gender;
+    if (householdCount !== undefined)
+      updateData.householdCount = householdCount;
 
+    // 비밀번호가 들어온 경우 → bcrypt 해시 후 저장
+    if (password) {
+      const hashed = await bcrypt.hash(password, 10);
+      updateData.password = hashed;
+    }
+
+    // DB 업데이트
     const updated = await Buyer.findByIdAndUpdate(myId, updateData, {
       new: true,
       projection: { password: 0 },
     });
+
     if (!updated) {
       return res.status(404).json({ message: "내 정보가 없습니다." });
     }
