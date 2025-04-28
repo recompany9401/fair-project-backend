@@ -63,9 +63,8 @@ exports.getMyInfo = async (req, res) => {
 //내정보 수정
 exports.updateMyInfo = async (req, res) => {
   try {
-    const myId = req.user.id; // 인증 미들웨어로부터
+    const myId = req.user.id;
 
-    // body로 들어온 필드
     const {
       name,
       phoneNumber,
@@ -74,10 +73,9 @@ exports.updateMyInfo = async (req, res) => {
       birthDate,
       gender,
       householdCount,
-      password, // 새 비밀번호
+      password,
     } = req.body;
 
-    // 업데이트 객체
     const updateData = {};
     if (name) updateData.name = name;
     if (phoneNumber) updateData.phoneNumber = phoneNumber;
@@ -88,13 +86,11 @@ exports.updateMyInfo = async (req, res) => {
     if (householdCount !== undefined)
       updateData.householdCount = householdCount;
 
-    // 비밀번호가 들어온 경우 → bcrypt 해시 후 저장
     if (password) {
       const hashed = await bcrypt.hash(password, 10);
       updateData.password = hashed;
     }
 
-    // DB 업데이트
     const updated = await Buyer.findByIdAndUpdate(myId, updateData, {
       new: true,
       projection: { password: 0 },
