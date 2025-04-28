@@ -44,3 +44,48 @@ exports.register = async (req, res) => {
     return res.status(500).json({ message: "서버 오류" });
   }
 };
+
+// 내정보 조회
+exports.getMyInfo = async (req, res) => {
+  try {
+    const myId = req.user.id;
+    const buyer = await Buyer.findById(myId, { password: 0 });
+    if (!buyer) {
+      return res.status(404).json({ message: "내 정보가 없습니다." });
+    }
+    return res.json(buyer);
+  } catch (error) {
+    console.error("getMyInfo 오류:", error);
+    return res.status(500).json({ message: "서버 오류" });
+  }
+};
+
+//내정보 수정
+exports.updateMyInfo = async (req, res) => {
+  try {
+    const myId = req.user.id;
+    const { name, phoneNumber, dong, ho } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (phoneNumber) updateData.phoneNumber = phoneNumber;
+    if (dong) updateData.dong = dong;
+    if (ho) updateData.ho = ho;
+
+    const updated = await Buyer.findByIdAndUpdate(myId, updateData, {
+      new: true,
+      projection: { password: 0 },
+    });
+    if (!updated) {
+      return res.status(404).json({ message: "내 정보가 없습니다." });
+    }
+
+    return res.json({
+      message: "내 정보 수정 완료",
+      buyer: updated,
+    });
+  } catch (error) {
+    console.error("updateMyInfo 오류:", error);
+    return res.status(500).json({ message: "서버 오류" });
+  }
+};
