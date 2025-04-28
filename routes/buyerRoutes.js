@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middlewares/authMiddleware");
 const buyerController = require("../controllers/buyerController");
 
 router.post("/register", buyerController.register);
