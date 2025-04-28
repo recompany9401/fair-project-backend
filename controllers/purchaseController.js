@@ -16,11 +16,16 @@ exports.createPurchase = async (req, res) => {
       discountOrSurcharge,
       finalPrice,
       deposit,
+      // 새로 추가된 필드
+      middlePayment,
+      finalPayment,
+
       contractDate,
       installationDate,
       note,
     } = req.body;
 
+    // 필수 필드 체크
     if (
       !buyerId ||
       !itemCategory ||
@@ -32,7 +37,7 @@ exports.createPurchase = async (req, res) => {
       return res.status(400).json({ message: "필수 필드가 누락되었습니다." });
     }
 
-    // Buyer DB에서 구매자명, 동/호수 가져오기
+    // Buyer에서 구매자명, 동/호수 가져오기
     let dongHoValue = "";
     let buyerNameValue = "";
     const buyer = await Buyer.findById(buyerId);
@@ -41,14 +46,17 @@ exports.createPurchase = async (req, res) => {
       dongHoValue = `${buyer.dong}동 ${buyer.ho}호`;
     }
 
+    // 날짜 변환
     const cDate = contractDate ? new Date(contractDate) : null;
     const iDate = installationDate ? new Date(installationDate) : null;
 
+    // businessId -> ObjectId
     let bizObjId = null;
     if (businessId) {
       bizObjId = new mongoose.Types.ObjectId(businessId);
     }
 
+    // 새로운 Purchase 문서 생성
     const newPurchase = new Purchase({
       buyerId: new mongoose.Types.ObjectId(buyerId),
       buyerName: buyerNameValue,
@@ -59,14 +67,21 @@ exports.createPurchase = async (req, res) => {
       businessName,
       productName,
       option,
+
       price: Number(price),
       discountOrSurcharge: discountOrSurcharge || 0,
       finalPrice:
         finalPrice || Number(price) - (Number(discountOrSurcharge) || 0),
+
+      // 새로 추가된 필드 (기본값 0)
       deposit: deposit || 0,
+      middlePayment: middlePayment || 0,
+      finalPayment: finalPayment || 0,
+
       contractDate: cDate,
       installationDate: iDate,
       note: note || "",
+
       status: "PENDING",
     });
 

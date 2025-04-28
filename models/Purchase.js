@@ -20,6 +20,8 @@ const PurchaseSchema = new mongoose.Schema({
   discountOrSurcharge: { type: Number, default: 0 },
   finalPrice: { type: Number, default: 0 },
   deposit: { type: Number, default: 0 },
+  middlePayment: { type: Number, default: 0 },
+  finalPayment: { type: Number, default: 0 },
   contractDate: { type: Date },
   installationDate: { type: Date },
   note: { type: String, default: "" },
