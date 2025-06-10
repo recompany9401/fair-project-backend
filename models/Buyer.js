@@ -11,7 +11,6 @@ const BuyerSchema = new mongoose.Schema({
     required: true,
   },
   name: {
-    // 계약자명
     type: String,
     required: true,
   },
@@ -46,7 +45,7 @@ const BuyerSchema = new mongoose.Schema({
   },
   approved: {
     type: Boolean,
-    default: false, // 관리자 승인 여부
+    default: false,
   },
   createdAt: {
     type: Date,
